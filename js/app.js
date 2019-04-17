@@ -1,25 +1,33 @@
 (function (window) {
 	'use strict';
 	// Your starting point. Enjoy the ride!
+	// 注册自定义指令
+	Vue.directive('focus', {
+		// 进入页面，让添加任务文本框获得焦点
+		inserted(el) {
+			// console.log('inserted')
+			el.focus()
+		},
+
+		// 数据更新时，让当前 编辑项的文本框 获得焦点
+		update(el, binding) {
+			// 为了提升性能，我们判断一下，只有 当前项 为编辑状态的时候，才让当前项的文本框
+			// 获得焦点
+			if (binding.value) {
+				console.log('update', binding.value)
+				el.focus()
+			}
+		}
+	})
+
+	// let list = JSON.parse(localStorage.getItem('list') || '[]')
 	const vm = new Vue({
 		el: '#app',
+		created() {
+			this.list=JSON.parse(localStorage.getItem('list') || '[]')
+		},
 		data: {
-			list: [{
-					id: 1,
-					todoName: '敲代码',
-					done: false
-				},
-				{
-					id: 2,
-					todoName: '打游戏',
-					done: false
-				},
-				{
-					id: 3,
-					todoName: '看同桌敲代码',
-					done: false
-				}
-			],
+			list: '',
 			inputValue: '',
 			editid: -1,
 			hides: -1,
@@ -101,6 +109,14 @@
 			// 单选控制全选
 			all() {
 				return this.list.every(item => item.done === true)
+			},
+		},
+		watch: {
+			list: {
+				deep: true,
+				handler(newvalue) {
+					localStorage.setItem('list', JSON.stringify(this.list))
+				}
 			}
 		}
 	})
